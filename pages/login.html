@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ตัวอย่างหน้าเข้าสู่ระบบ · ระบบแจ้งซ่อมโรงเรียน</title>
+  <title>เข้าสู่ระบบจำลอง · ระบบแจ้งซ่อมโรงเรียน</title>
   <link rel="stylesheet" href="../static/style.css">
+  <script src="../static/demo-store.js" defer></script>
   <script src="../static/login-preview.js" defer></script>
 </head>
 <body>
@@ -14,26 +15,27 @@
   <main class="container pb-5">
     <div class="login-layout">
       <div class="login-intro">
-        <p class="eyebrow">ตัวอย่างสำหรับการเรียนรู้</p>
+        <p class="eyebrow">ระบบจำลองสำหรับการเรียนรู้</p>
         <h1>แจ้งซ่อมง่าย<br>ติดตามได้ทุกขั้นตอน</h1>
-        <p>ลองกรอกฟอร์มบนเว็บ แล้วศึกษาโค้ดการทำงานของระบบแจ้งซ่อม</p>
+        <p>ทดลองแจ้งซ่อม มอบหมายงาน และติดตามผลได้ทันทีบนเว็บ</p>
         <a class="btn btn-outline-primary" href="../">กลับไปอ่านใบงาน →</a>
       </div>
       <section class="card login-card p-4" aria-labelledby="login-heading">
-        <h2 id="login-heading">ตัวอย่างหน้าเข้าสู่ระบบ</h2>
+        <h2 id="login-heading">เข้าสู่ระบบจำลอง</h2>
         <div class="alert alert-info">
-          <strong>กรอกชื่อผู้ใช้และรหัสผ่านเพื่อทดลองฟอร์มได้</strong>
-          <p>หน้านี้ยังไม่เชื่อมต่อระบบตรวจบัญชีออนไลน์ ข้อมูลที่กรอกจะไม่ถูกส่งหรือบันทึก</p>
+          <strong>บัญชีทดลอง: teacher / admin / technician</strong>
+          <p>ทุกบัญชีใช้รหัสผ่าน <code>Practice123!</code></p>
+          <p>ข้อมูลจำลองเก็บในเบราว์เซอร์นี้ ไม่แชร์ข้ามเครื่อง ใช้บัญชีตัวอย่างเท่านั้น</p>
         </div>
         <form id="login-preview-form">
           <label class="form-label" for="username">ชื่อผู้ใช้</label>
           <input class="form-control mb-3" id="username" autocomplete="username" placeholder="ตัวอย่าง: teacher" required>
           <label class="form-label" for="password">รหัสผ่าน</label>
           <input class="form-control mb-3" id="password" type="password" autocomplete="current-password" required>
-          <button class="btn btn-primary w-100" type="submit">ทดลองฟอร์มเข้าสู่ระบบ →</button>
+          <button class="btn btn-primary w-100" type="submit">เข้าสู่ระบบจำลอง →</button>
         </form>
         <p id="login-preview-result" class="alert alert-info mt-3" role="status" tabindex="-1" hidden></p>
-        <noscript><p class="alert alert-info">เปิด JavaScript เพื่อทดลองฟอร์ม หน้านี้ยังไม่รองรับการเข้าสู่ระบบจริง</p></noscript>
+        <noscript><p class="alert alert-info">เปิด JavaScript เพื่อใช้งานระบบจำลอง</p></noscript>
         <p class="login-help"><a href="../school-repair-source.zip" download>ดาวน์โหลดซอร์สโค้ด ZIP</a> · <a href="../README.html">อ่านคู่มือ</a></p>
       </section>
     </div>

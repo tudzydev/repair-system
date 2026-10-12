@@ -9,7 +9,7 @@ if (loginLink && loginHelp) {
     loginHelp.textContent = 'รัน ./start.command ก่อนเข้าสู่ระบบ';
   } else if (location.hostname.endsWith('.github.io')) {
     loginLink.href = 'pages/login.html';
-    loginLink.textContent = 'ดูตัวอย่างหน้าเข้าสู่ระบบ →';
-    loginHelp.textContent = 'เว็บใบงานและตัวอย่างบน GitHub Pages · ระบบบันทึกข้อมูลใช้ Flask';
+    loginLink.textContent = 'ทดลองระบบแจ้งซ่อม →';
+    loginHelp.textContent = 'ระบบจำลองบน GitHub Pages · ข้อมูลเก็บในเบราว์เซอร์นี้';
   }
 }

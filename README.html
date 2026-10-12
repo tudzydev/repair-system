@@ -23,7 +23,7 @@
         <a class="button primary" href="school-repair-source.zip" download>ดาวน์โหลดโปรเจ็กต์ ZIP ↓</a>
         <a class="button secondary" href="README.md" download>ดาวน์โหลดคู่มือ Markdown</a>
       </div>
-      <p class="notice">เว็บนี้ใช้สำหรับอ่านคู่มือและดูตัวอย่าง เมื่อต้องการเข้าสู่ระบบหรือบันทึกข้อมูล ให้เปิดโปรเจ็กต์ด้วย Flask บนเครื่องของคุณ</p>
+      <p class="notice">ทดลองระบบบนเว็บได้ที่ <a href="pages/login.html">ระบบแจ้งซ่อมจำลอง</a> ข้อมูลเก็บในเบราว์เซอร์เดียวกัน ส่วนระบบจริงที่แชร์ข้อมูลใช้ Flask ตามคู่มือนี้</p>
     </section>
     <div class="guide-layout">
       <aside class="guide-sidebar">
@@ -110,7 +110,7 @@ python -m pip install -r requirements.txt
 </table>
 <h2 id="3">3. สร้างฐานข้อมูลและเปิดเว็บ</h2>
 <p>บน macOS ใช้ <code>./start.command</code> เพื่อสร้าง environment <code>.venv-app</code> ติดตั้งแพ็กเกจที่จำเป็น สร้างฐานข้อมูลและบัญชีฝึก แล้วเปิด Flask บนพอร์ต 5001 จากนั้นเปิด <code>http://127.0.0.1:5001/login</code> ค้าง Terminal ไว้ระหว่างใช้งาน และกด Ctrl+C เมื่อต้องการหยุดระบบ การติดตั้งครั้งแรกต้องเชื่อมต่ออินเทอร์เน็ต</p>
-<p>Live Server พอร์ต 5500 ใช้ดูหน้าตัวอย่างเท่านั้น ไม่สามารถเข้าสู่ระบบหรือบันทึกข้อมูลได้</p>
+<p>Live Server พอร์ต 5500 ไม่รัน Flask แต่เปิด <code>pages/login.html</code> เพื่อทดลองระบบจำลองที่เก็บข้อมูลในเบราว์เซอร์ได้ ระบบ Flask ที่ใช้ฐานข้อมูลจริงต้องเปิดผ่านพอร์ต 5001 ตามด้านบน</p>
 <pre><code class="language-sh">python -m flask --app app:create_app init-db
 python -m flask --app app:create_app run --debug
 </code></pre>
@@ -348,9 +348,12 @@ docker compose --env-file deploy/server.env up -d --build
 <li>ยกเลิก workflow เก่า <strong>Deploy self-hosted</strong> ที่ยัง Queued/Pending แล้วติดตาม workflow ใหม่ <strong>Deploy GitHub Pages</strong> ในแท็บ Actions</li>
 <li>เมื่อสำเร็จ เปิด https://tudzydev.github.io/repair-system/</li>
 </ol>
-<p>หน้าเข้าสู่ระบบตัวอย่างอยู่ที่ https://tudzydev.github.io/repair-system/pages/login.html หาก URL <code>/repair-system/login</code> แสดง 404 ให้ใช้ลิงก์ตัวอย่างนี้ และตรวจว่า workflow ล่าสุดเผยแพร่สำเร็จแล้ว หน้า <code>/login</code> สำหรับเข้าสู่ระบบจริงเป็น route ของ Flask</p>
+<p>หน้าเข้าสู่ระบบจำลองอยู่ที่ https://tudzydev.github.io/repair-system/pages/login.html หาก URL <code>/repair-system/login</code> แสดง 404 ให้ใช้ลิงก์นี้ และตรวจว่า workflow ล่าสุดเผยแพร่สำเร็จแล้ว หน้า <code>/login</code> สำหรับระบบ Flask เป็นอีกระบบหนึ่ง</p>
 <p>หากขั้นตอน Configure Pages แจ้ง <code>Get Pages site failed</code> / <code>HttpError: Not Found</code> ให้เปิด <strong>Settings → Pages</strong> และเลือก Source เป็น <strong>GitHub Actions</strong> ก่อน แล้วกลับไป workflow ที่ล้มเหลว กด <strong>Re-run jobs → Re-run failed jobs</strong> การเปิด Pages ครั้งแรกต้องทำโดยผู้ที่มีสิทธิ์ตั้งค่า repository; workflow นี้ไม่เปิด Pages อัตโนมัติ เพราะ <code>enablement: true</code> ต้องใช้ token เพิ่มเติมนอกเหนือจาก <code>GITHUB_TOKEN</code></p>
-<p>GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่างหน้าเข้าสู่ระบบ และซอร์สโค้ดสำหรับศึกษา หน้าเข้าสู่ระบบตัวอย่างกรอกชื่อผู้ใช้และรหัสผ่านได้ เมื่อกดทดลองฟอร์มจะแจ้งว่ายังไม่เชื่อมต่อเซิร์ฟเวอร์ตรวจบัญชี โดยไม่ส่งหรือบันทึกข้อมูลที่กรอก GitHub Pages ไม่รัน Python/Flask และไม่สามารถใช้ฐานข้อมูล SQLite สำหรับระบบจริงได้ หากต้องการเข้าสู่ระบบและบันทึกข้อมูลออนไลน์ ให้ใช้ Docker บนเซิร์ฟเวอร์ตามข้อ 9</p>
+<p>GitHub Pages มีระบบจำลองที่ใช้งานได้ด้วย JavaScript: เข้าสู่ระบบ ดูสถิติ ค้นหาใบแจ้งซ่อม แจ้งซ่อม มอบหมายงาน เริ่มซ่อม บันทึกผลและค่าใช้จ่าย เพิ่มความคิดเห็น และพิมพ์ใบแจ้งซ่อม ใช้ชื่อผู้ใช้ <code>teacher</code>, <code>admin</code> หรือ <code>technician</code> กับรหัสผ่าน <code>Practice123!</code> ทุกบัญชี</p>
+<p>ทดลองหนึ่งวงจร: เข้า <code>teacher</code> แล้วแจ้งซ่อมใหม่ → ออกจากระบบ เข้า <code>admin</code> เพื่อมอบหมายให้ช่างและกำหนดวันเสร็จ → ออกจากระบบ เข้า <code>technician</code> เพื่อเริ่มซ่อมและบันทึกผล → กลับเข้า <code>teacher</code> เพื่อดูผล ข้อมูลยังอยู่หลังรีเฟรชหน้า ผู้ดูแลเปิด <strong>บัญชีทดลอง</strong> เพื่อรีเซ็ตข้อมูลกลับเป็นตัวอย่างเริ่มต้นได้</p>
+<p>ข้อมูลจำลองเก็บใน <code>localStorage</code> ของเบราว์เซอร์เดียวกัน บัญชีที่กำลังเข้าใช้เก็บใน <code>sessionStorage</code> ไม่บันทึกรหัสผ่าน ไม่แชร์ข้อมูลข้ามเครื่อง และการล้างข้อมูลเว็บไซต์จะลบข้อมูลจำลอง ระบบนี้ใช้บัญชีตัวอย่างที่เปิดเผยและจำลองสิทธิ์ด้วย JavaScript จึงใช้เพื่อทดลองเท่านั้น ยังไม่มีการแนบรูปหรือเพิ่มผู้ใช้ใหม่ หากต้องการระบบจริงที่แชร์ข้อมูลและตรวจสิทธิ์บนเซิร์ฟเวอร์ ให้ใช้ Flask/Docker ตามข้อ 9</p>
+<p>ทดสอบวงจรระบบจำลองและการเก็บข้อมูลด้วย <code>node --test tests/test_demo.cjs</code> (ต้องมี Node.js)</p>
 <p>เว็บที่เผยแพร่มีเฉพาะไฟล์สาธารณะที่ระบุในสคริปต์ build ไม่รวม <code>instance/</code>, <code>.env</code>, <code>deploy/server.env</code> หรือ virtual environment ตรวจ build บนเครื่องได้ด้วย <code>python3 scripts/build_pages.py</code> ผลลัพธ์อยู่ใน <code>_site/</code> ซึ่งถูกยกเว้นจาก Git</p>
 <p>อ่านคู่มือบนเว็บได้ที่ <a href="README.html">คู่มือติดตั้งและใช้งาน</a> มีสารบัญ ตาราง และปุ่มคัดลอกโค้ด ส่วน <code>README.md</code> เป็นไฟล์ต้นฉบับสำหรับอ่านใน GitHub หรือดาวน์โหลด ทุกครั้งที่ workflow ทำงานจะสร้างหน้าเว็บจาก Markdown ล่าสุดโดยอัตโนมัติ</p>
 <p>หากแก้คู่มือแล้วต้องการอัปเดตหน้าเว็บใน repository ด้วย ให้ติดตั้ง <code>python3 -m pip install -r requirements-pages.txt</code> แล้วรัน <code>python3 scripts/build_guide.py</code> ก่อน commit หากต้องการตรวจเว็บทั้งหมด ให้รัน <code>python3 scripts/build_pages.py</code></p>
