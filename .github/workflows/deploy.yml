@@ -1,4 +1,4 @@
-name: Deploy self-hosted
+name: Deploy GitHub Pages
 
 on:
   push:
@@ -7,23 +7,34 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: repair-system-production
+  group: github-pages
   cancel-in-progress: false
 
 jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, linux, repair-production]
-    environment: production
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 10
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Build, test and deploy
-        env:
-          DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '/opt/repair-system' }}
-        run: bash deploy/deploy.sh
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Build static website
+        run: python3 scripts/build_pages.py
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

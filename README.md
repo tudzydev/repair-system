@@ -239,27 +239,22 @@ docker compose --env-file deploy/server.env up -d --build
 
 เปิด `https://<โดเมนจริง>/login` และใช้บัญชีในไฟล์ตั้งค่า ระบบจะสร้างฐานข้อมูลและผู้ดูแลครั้งแรกโดยไม่เพิ่มบัญชีฝึก ข้อมูลเก็บใน Docker volume `repair-data` การเปลี่ยน `ADMIN_PASSWORD` ในไฟล์ตั้งค่าจะไม่เปลี่ยนรหัสผ่านบัญชีที่สร้างแล้ว
 
-## 10. Deploy ผ่าน GitHub Actions บน self-hosted runner
+## 10. เผยแพร่ด้วย GitHub Pages
 
-Workflow `.github/workflows/deploy.yml` จะ build image, รันทดสอบ และ deploy เมื่อ push เข้า `main` หรือกด **Actions → Deploy self-hosted → Run workflow** โดยใช้ Linux runner บนเซิร์ฟเวอร์จริงที่มี label `repair-production` ระบบใช้ Docker volumes เดิมเก็บข้อมูลและใช้ Caddy จัดการ HTTPS
+Workflow `.github/workflows/deploy.yml` ใช้ GitHub-hosted runner (`ubuntu-latest`) สร้างเว็บด้วย `scripts/build_pages.py` และเผยแพร่ GitHub Pages เมื่อ push เข้า `main` หรือกด **Actions → Deploy GitHub Pages → Run workflow** ไม่ต้องติดตั้ง self-hosted runner, Docker หรือกำหนด secret เพื่อเผยแพร่ใบงาน
 
-1. เตรียม Linux server พร้อม Docker Engine, Docker Compose v2 ที่รองรับ `up --wait`, Git และ Bash ให้บัญชี runner เรียก Docker ได้ ตั้ง DNS ของโดเมนให้ชี้มายังเซิร์ฟเวอร์และเปิดพอร์ต 80/443
-2. ใน GitHub repository เปิด **Settings → Actions → Runners → New self-hosted runner** เลือก Linux แล้วทำตามคำสั่งที่ GitHub แสดงบนเซิร์ฟเวอร์ เพิ่ม label `repair-production` ระหว่างตั้งค่า จากนั้นติดตั้ง runner เป็น service ตามคำแนะนำของ GitHub
-3. สร้างโฟลเดอร์ถาวรสำหรับ deploy โดยแทน `<runner-user>` ด้วยชื่อบัญชีที่รัน runner:
+1. เปิด **Settings → Pages → Build and deployment → Source** แล้วเลือก **GitHub Actions**
+2. Commit และ push การเปลี่ยนแปลงเข้า `main`
+3. ยกเลิก workflow เก่า **Deploy self-hosted** ที่ยัง Queued/Pending แล้วติดตาม workflow ใหม่ **Deploy GitHub Pages** ในแท็บ Actions
+4. เมื่อสำเร็จ เปิด https://tudzydev.github.io/repair-system/
 
-```sh
-sudo install -d -m 700 -o <runner-user> -g <runner-group> /opt/repair-system
-```
+GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่างหน้าเข้าสู่ระบบ และซอร์สโค้ดสำหรับศึกษา หน้าเข้าสู่ระบบตัวอย่างปิดช่องกรอกและปุ่มส่งไว้อย่างชัดเจน เพราะ GitHub Pages ไม่รัน Python/Flask และไม่สามารถใช้ฐานข้อมูล SQLite สำหรับระบบจริงได้ หากต้องการเข้าสู่ระบบและบันทึกข้อมูล ให้ดาวน์โหลด ZIP แล้วรัน Flask ตามคู่มือ หรือใช้ Docker บนเซิร์ฟเวอร์ตามข้อ 9
 
-4. คัดลอก `deploy/server.env.example` ไปเป็น `/opt/repair-system/server.env` บนเซิร์ฟเวอร์ ใส่โดเมนจริง, secret อย่างน้อย 32 ตัวอักษร และรหัสผ่านผู้ดูแลอย่างน้อย 12 ตัวอักษร ให้บัญชี runner อ่านไฟล์ได้และกำหนดสิทธิ์ `chmod 600 /opt/repair-system/server.env` ค่าที่สร้างไว้ใน `deploy/server.env` บนเครื่องพัฒนาจะไม่ถูกส่งไปเซิร์ฟเวอร์อัตโนมัติ
-5. ใน **Settings → Environments** สร้าง environment ชื่อ `production` จำกัด deployment branch เป็น `main` หากต้องการเปลี่ยนโฟลเดอร์ deploy ให้เพิ่ม environment variable `DEPLOY_DIR` เป็น absolute path ของโฟลเดอร์ที่เตรียมไว้ ค่าเริ่มต้นคือ `/opt/repair-system`
-6. Commit และ push ซอร์สโค้ดขึ้น repository แล้วติดตามผลในแท็บ **Actions** เมื่อผ่าน ให้เปิด `https://<โดเมนจริง>/login`
+เว็บที่เผยแพร่มีเฉพาะไฟล์สาธารณะที่ระบุในสคริปต์ build ไม่รวม `instance/`, `.env`, `deploy/server.env` หรือ virtual environment ตรวจ build บนเครื่องได้ด้วย `python3 scripts/build_pages.py` ผลลัพธ์อยู่ใน `_site/` ซึ่งถูกยกเว้นจาก Git
 
-รหัสผ่านและ secret อยู่บนเซิร์ฟเวอร์ ไม่ต้องเพิ่ม GitHub Secrets สำหรับ workflow นี้ ให้ใช้ค่า `SECRET_KEY` เดิมทุกครั้งเพื่อรักษา session และจำไว้ว่าการเปลี่ยน `ADMIN_PASSWORD` ในไฟล์ไม่ได้เปลี่ยนรหัสผ่านผู้ดูแลที่มีอยู่แล้ว
+ไฟล์ `deploy/deploy.sh` ยังใช้สำหรับ deploy Docker บน Linux ด้วยตนเองได้ แต่ไม่ได้ถูกเรียกจาก GitHub Actions อีกต่อไป
 
-สคริปต์ `deploy/deploy.sh` ทดสอบ image ก่อนเปลี่ยนบริการที่กำลังรัน และเก็บ Compose/Caddy ในโฟลเดอร์ถาวรเพื่อให้การล้าง checkout ของ runner ไม่กระทบ bind mount ขั้นตอน deploy รอ health check ของเว็บ แต่ยังต้องตรวจ DNS และ HTTPS จากภายนอก การ deploy จะ restart container และอาจมีช่วงหยุดบริการสั้น ๆ หาก deploy ไม่สำเร็จ workflow จะแจ้ง failure โดยไม่มี rollback อัตโนมัติ
-
-ดู [การติดตั้ง self-hosted runner](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners) และ [การเลือก runner ด้วย labels](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/use-in-a-workflow)
+ดู [การตั้งค่า publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) และ [workflow สำหรับ GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 ## เอกสารที่ใช้ประกอบ
 

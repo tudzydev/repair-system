@@ -10,3 +10,4 @@ instance/
 .env.*
 deploy/server.env
 *.zip
+_site/
