@@ -9,7 +9,7 @@ OUTPUT = ROOT / "_site"
 def build():
     OUTPUT.mkdir(exist_ok=True)
     # Only explicitly public assets enter the Pages artifact.
-    for name in ("static", "templates"):
+    for name in ("static", "templates", "pages"):
         shutil.copytree(ROOT / name, OUTPUT / name, dirs_exist_ok=True)
     for name in (
         "README.md", "app.py", "models.py", "services.py", "schema.sql",
@@ -18,7 +18,7 @@ def build():
     ):
         shutil.copy2(ROOT / name, OUTPUT / name)
     index = (ROOT / "index.html").read_text()
-    index = index.replace('href="login"', 'href="login/"')
+    index = index.replace('href="login"', 'href="pages/login.html"')
     index = index.replace("เข้าสู่ระบบแจ้งซ่อม →", "ดูตัวอย่างหน้าเข้าสู่ระบบ →")
     index = index.replace("เปิดระบบแจ้งซ่อมบนเซิร์ฟเวอร์นี้", "เว็บใบงานและตัวอย่างบน GitHub Pages · ระบบบันทึกข้อมูลใช้ Flask")
     (OUTPUT / "index.html").write_text(index)

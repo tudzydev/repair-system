@@ -248,6 +248,8 @@ Workflow `.github/workflows/deploy.yml` ใช้ GitHub-hosted runner (`ubuntu-
 3. ยกเลิก workflow เก่า **Deploy self-hosted** ที่ยัง Queued/Pending แล้วติดตาม workflow ใหม่ **Deploy GitHub Pages** ในแท็บ Actions
 4. เมื่อสำเร็จ เปิด https://tudzydev.github.io/repair-system/
 
+หน้าเข้าสู่ระบบตัวอย่างอยู่ที่ https://tudzydev.github.io/repair-system/pages/login.html หาก URL `/repair-system/login` แสดง 404 ให้ใช้ลิงก์ตัวอย่างนี้ และตรวจว่า workflow ล่าสุดเผยแพร่สำเร็จแล้ว หน้า `/login` สำหรับเข้าสู่ระบบจริงเป็น route ของ Flask
+
 หากขั้นตอน Configure Pages แจ้ง `Get Pages site failed` / `HttpError: Not Found` ให้เปิด **Settings → Pages** และเลือก Source เป็น **GitHub Actions** ก่อน แล้วกลับไป workflow ที่ล้มเหลว กด **Re-run jobs → Re-run failed jobs** การเปิด Pages ครั้งแรกต้องทำโดยผู้ที่มีสิทธิ์ตั้งค่า repository; workflow นี้ไม่เปิด Pages อัตโนมัติ เพราะ `enablement: true` ต้องใช้ token เพิ่มเติมนอกเหนือจาก `GITHUB_TOKEN`
 
 GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่างหน้าเข้าสู่ระบบ และซอร์สโค้ดสำหรับศึกษา หน้าเข้าสู่ระบบตัวอย่างปิดช่องกรอกและปุ่มส่งไว้อย่างชัดเจน เพราะ GitHub Pages ไม่รัน Python/Flask และไม่สามารถใช้ฐานข้อมูล SQLite สำหรับระบบจริงได้ หากต้องการเข้าสู่ระบบและบันทึกข้อมูล ให้ดาวน์โหลด ZIP แล้วรัน Flask ตามคู่มือ หรือใช้ Docker บนเซิร์ฟเวอร์ตามข้อ 9
