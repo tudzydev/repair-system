@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ตัวอย่างหน้าเข้าสู่ระบบ · ระบบแจ้งซ่อมโรงเรียน</title>
   <link rel="stylesheet" href="../static/style.css">
+  <script src="../static/login-preview.js" defer></script>
 </head>
 <body>
   <header class="app-header"><div class="header-inner">
@@ -15,20 +16,24 @@
       <div class="login-intro">
         <p class="eyebrow">ตัวอย่างสำหรับการเรียนรู้</p>
         <h1>แจ้งซ่อมง่าย<br>ติดตามได้ทุกขั้นตอน</h1>
-        <p>ศึกษาโค้ดและดาวน์โหลดโปรเจ็กต์เพื่อทดลองระบบบนเครื่องของคุณ</p>
+        <p>ลองกรอกฟอร์มบนเว็บ แล้วศึกษาโค้ดการทำงานของระบบแจ้งซ่อม</p>
         <a class="btn btn-outline-primary" href="../">กลับไปอ่านใบงาน →</a>
       </div>
       <section class="card login-card p-4" aria-labelledby="login-heading">
         <h2 id="login-heading">ตัวอย่างหน้าเข้าสู่ระบบ</h2>
         <div class="alert alert-info">
-          <strong>หน้านี้เป็นตัวอย่าง จึงยังเข้าสู่ระบบหรือบันทึกข้อมูลไม่ได้</strong>
-          <p>ดาวน์โหลดซอร์สโค้ด แตกไฟล์ แล้วรัน start.command บน Mac หรือทำตาม README เพื่อเปิดระบบ Flask</p>
+          <strong>กรอกชื่อผู้ใช้และรหัสผ่านเพื่อทดลองฟอร์มได้</strong>
+          <p>หน้านี้ยังไม่เชื่อมต่อระบบตรวจบัญชีออนไลน์ ข้อมูลที่กรอกจะไม่ถูกส่งหรือบันทึก</p>
         </div>
-        <label class="form-label" for="username">ชื่อผู้ใช้</label>
-        <input class="form-control mb-3" id="username" placeholder="ตัวอย่าง: teacher" disabled>
-        <label class="form-label" for="password">รหัสผ่าน</label>
-        <input class="form-control mb-3" id="password" type="password" disabled>
-        <button class="btn btn-primary w-100" type="button" disabled>เข้าสู่ระบบ (ตัวอย่าง)</button>
+        <form id="login-preview-form">
+          <label class="form-label" for="username">ชื่อผู้ใช้</label>
+          <input class="form-control mb-3" id="username" autocomplete="username" placeholder="ตัวอย่าง: teacher" required>
+          <label class="form-label" for="password">รหัสผ่าน</label>
+          <input class="form-control mb-3" id="password" type="password" autocomplete="current-password" required>
+          <button class="btn btn-primary w-100" type="submit">ทดลองฟอร์มเข้าสู่ระบบ →</button>
+        </form>
+        <p id="login-preview-result" class="alert alert-info mt-3" role="status" tabindex="-1" hidden></p>
+        <noscript><p class="alert alert-info">เปิด JavaScript เพื่อทดลองฟอร์ม หน้านี้ยังไม่รองรับการเข้าสู่ระบบจริง</p></noscript>
         <p class="login-help"><a href="../school-repair-source.zip" download>ดาวน์โหลดซอร์สโค้ด ZIP</a> · <a href="../README.html">อ่านคู่มือ</a></p>
       </section>
     </div>
