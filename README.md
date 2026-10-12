@@ -241,12 +241,14 @@ docker compose --env-file deploy/server.env up -d --build
 
 ## 10. เผยแพร่ด้วย GitHub Pages
 
-Workflow `.github/workflows/deploy.yml` ใช้ GitHub-hosted runner (`ubuntu-latest`) สร้างเว็บด้วย `scripts/build_pages.py` และเผยแพร่ GitHub Pages เมื่อ push เข้า `main` หรือกด **Actions → Deploy GitHub Pages → Run workflow** ไม่ต้องติดตั้ง self-hosted runner, Docker หรือกำหนด secret เพื่อเผยแพร่ใบงาน
+Workflow `.github/workflows/deploy.yml` ใช้ GitHub-hosted runner (`ubuntu-24.04`) สร้างเว็บด้วย `scripts/build_pages.py` และเผยแพร่ GitHub Pages เมื่อ push เข้า `main` หรือกด **Actions → Deploy GitHub Pages → Run workflow** ไม่ต้องติดตั้ง self-hosted runner, Docker หรือกำหนด secret เพื่อเผยแพร่ใบงาน
 
 1. เปิด **Settings → Pages → Build and deployment → Source** แล้วเลือก **GitHub Actions**
 2. Commit และ push การเปลี่ยนแปลงเข้า `main`
 3. ยกเลิก workflow เก่า **Deploy self-hosted** ที่ยัง Queued/Pending แล้วติดตาม workflow ใหม่ **Deploy GitHub Pages** ในแท็บ Actions
 4. เมื่อสำเร็จ เปิด https://tudzydev.github.io/repair-system/
+
+หากขั้นตอน Configure Pages แจ้ง `Get Pages site failed` / `HttpError: Not Found` ให้เปิด **Settings → Pages** และเลือก Source เป็น **GitHub Actions** ก่อน แล้วกลับไป workflow ที่ล้มเหลว กด **Re-run jobs → Re-run failed jobs** การเปิด Pages ครั้งแรกต้องทำโดยผู้ที่มีสิทธิ์ตั้งค่า repository; workflow นี้ไม่เปิด Pages อัตโนมัติ เพราะ `enablement: true` ต้องใช้ token เพิ่มเติมนอกเหนือจาก `GITHUB_TOKEN`
 
 GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่างหน้าเข้าสู่ระบบ และซอร์สโค้ดสำหรับศึกษา หน้าเข้าสู่ระบบตัวอย่างปิดช่องกรอกและปุ่มส่งไว้อย่างชัดเจน เพราะ GitHub Pages ไม่รัน Python/Flask และไม่สามารถใช้ฐานข้อมูล SQLite สำหรับระบบจริงได้ หากต้องการเข้าสู่ระบบและบันทึกข้อมูล ให้ดาวน์โหลด ZIP แล้วรัน Flask ตามคู่มือ หรือใช้ Docker บนเซิร์ฟเวอร์ตามข้อ 9
 
