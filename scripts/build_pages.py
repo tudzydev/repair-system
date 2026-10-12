@@ -1,6 +1,7 @@
 """Build the public worksheet site without Flask or private runtime files."""
 from pathlib import Path
 import shutil
+from build_guide import build_guide
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "_site"
@@ -24,6 +25,7 @@ def build():
     (OUTPUT / "index.html").write_text(index)
     (OUTPUT / "login").mkdir(exist_ok=True)
     shutil.copy2(ROOT / "pages/login.html", OUTPUT / "login/index.html")
+    build_guide(OUTPUT)
     (OUTPUT / ".nojekyll").touch()
     print(f"Built public website: {OUTPUT}")
 

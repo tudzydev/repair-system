@@ -256,6 +256,10 @@ GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่า�
 
 เว็บที่เผยแพร่มีเฉพาะไฟล์สาธารณะที่ระบุในสคริปต์ build ไม่รวม `instance/`, `.env`, `deploy/server.env` หรือ virtual environment ตรวจ build บนเครื่องได้ด้วย `python3 scripts/build_pages.py` ผลลัพธ์อยู่ใน `_site/` ซึ่งถูกยกเว้นจาก Git
 
+อ่านคู่มือบนเว็บได้ที่ [คู่มือติดตั้งและใช้งาน](README.html) มีสารบัญ ตาราง และปุ่มคัดลอกโค้ด ส่วน `README.md` เป็นไฟล์ต้นฉบับสำหรับอ่านใน GitHub หรือดาวน์โหลด ทุกครั้งที่ workflow ทำงานจะสร้างหน้าเว็บจาก Markdown ล่าสุดโดยอัตโนมัติ
+
+หากแก้คู่มือแล้วต้องการอัปเดตหน้าเว็บใน repository ด้วย ให้ติดตั้ง `python3 -m pip install -r requirements-pages.txt` แล้วรัน `python3 scripts/build_guide.py` ก่อน commit หากต้องการตรวจเว็บทั้งหมด ให้รัน `python3 scripts/build_pages.py`
+
 ไฟล์ `deploy/deploy.sh` ยังใช้สำหรับ deploy Docker บน Linux ด้วยตนเองได้ แต่ไม่ได้ถูกเรียกจาก GitHub Actions อีกต่อไป
 
 ดู [การตั้งค่า publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) และ [workflow สำหรับ GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)

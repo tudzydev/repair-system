@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="คู่มือติดตั้งและใช้งานระบบแจ้งซ่อมโรงเรียน ตั้งแต่เตรียมเครื่องจนถึงทดลองใช้งาน Flask">
+  <title>คู่มือเริ่มต้น · ระบบแจ้งซ่อมโรงเรียน</title>
+  <link rel="stylesheet" href="static/guide.css">
+  <script src="static/guide.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#guide-content">ข้ามไปเนื้อหาคู่มือ</a>
+  <header class="guide-header">
+    <a class="brand" href="./">🔧 ระบบแจ้งซ่อมโรงเรียน</a>
+    <a href="./">กลับไปใบงาน <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="guide-shell">
+    <section class="hero" aria-labelledby="guide-title">
+      <p class="eyebrow">คู่มือสำหรับนักศึกษา</p>
+      <h1 id="guide-title">เริ่มต้นใช้งาน<br>ระบบแจ้งซ่อมโรงเรียน</h1>
+      <p class="hero-description">เตรียมเครื่อง ติดตั้งโปรเจ็กต์ และลองแจ้งซ่อมครบหนึ่งวงจร<br>ทำตามทีละขั้น พร้อมคำสั่งที่คัดลอกไปใช้ได้ทันที</p>
+      <div class="hero-actions">
+        <a class="button primary" href="school-repair-source.zip" download>ดาวน์โหลดโปรเจ็กต์ ZIP ↓</a>
+        <a class="button secondary" href="README.md" download>ดาวน์โหลดคู่มือ Markdown</a>
+      </div>
+      <p class="notice">เว็บนี้ใช้สำหรับอ่านคู่มือและดูตัวอย่าง เมื่อต้องการเข้าสู่ระบบหรือบันทึกข้อมูล ให้เปิดโปรเจ็กต์ด้วย Flask บนเครื่องของคุณ</p>
+    </section>
+    <div class="guide-layout">
+      <aside class="guide-sidebar">
+        <details open>
+          <summary>สารบัญคู่มือ</summary>
+          <nav aria-label="สารบัญคู่มือ"><div class="toc">
+<ul>
+<li><a href="#1">1. เตรียมเครื่องและสร้างโปรเจ็กต์</a></li>
+<li><a href="#2-virtual-environment">2. สร้าง virtual environment และติดตั้งไลบรารี</a></li>
+<li><a href="#3">3. สร้างฐานข้อมูลและเปิดเว็บ</a></li>
+<li><a href="#4">4. โครงสร้างไฟล์และลำดับอ่านโค้ด</a></li>
+<li><a href="#5">5. ฝึกใช้งานครบหนึ่งวงจร</a></li>
+<li><a href="#6">6. วิธีฝึกเขียนทีละส่วน</a></li>
+<li><a href="#7-pdf">7. PDF</a></li>
+<li><a href="#8">8. ทดสอบและแก้ปัญหา</a></li>
+<li><a href="#9-docker">9. ตั้งค่าเซิร์ฟเวอร์ด้วย Docker</a></li>
+<li><a href="#10-github-pages">10. เผยแพร่ด้วย GitHub Pages</a></li>
+<li><a href="#_2">เอกสารที่ใช้ประกอบ</a></li>
+</ul>
+</div>
+</nav>
+        </details>
+      </aside>
+      <article class="guide-content" id="guide-content" tabindex="-1"><h1 id="_1">โปรเจ็กต์ฝึกเขียนระบบแจ้งซ่อมโรงเรียน</h1>
+<p>โปรเจ็กต์นี้ใช้ Flask + SQLite + SQLAlchemy + Jinja2 ตามใบงาน <code>index.html</code> มีซอร์สโค้ดให้เปิดอ่าน แก้ไข และรันบนเครื่องของคุณ คำตอบแต่ละข้ออยู่ใน <code>index.html</code> และเชื่อมโยงกับไฟล์โค้ดจริง</p>
+<h2 id="1">1. เตรียมเครื่องและสร้างโปรเจ็กต์</h2>
+<p>ติดตั้ง Python 3.10 ขึ้นไป (แนะนำ 3.11 หรือ 3.12) และโปรแกรมแก้โค้ด เช่น VS Code จากนั้นเปิด Terminal ในโฟลเดอร์นี้</p>
+<p>ถ้าจะเริ่มเขียนใหม่เอง ให้สร้างโฟลเดอร์แล้วค่อยคัดลอกหรือพิมพ์ไฟล์ตามโครงสร้างด้านล่าง:</p>
+<pre><code class="language-sh">mkdir school-repair
+cd school-repair
+</code></pre>
+<p>ถ้าใช้ซอร์สโค้ดที่เตรียมไว้ในโฟลเดอร์ <code>repair-system</code> ให้ใช้โฟลเดอร์เดิมได้เลย ไม่ต้องสร้างซ้ำ</p>
+<p>ตรวจสอบ Python และ SQLite:</p>
+<pre><code class="language-sh">python3 --version
+python3 -c &quot;import sqlite3; print(sqlite3.sqlite_version)&quot;
+</code></pre>
+<p>SQLite ต้องเป็นเวอร์ชัน 3.35 ขึ้นไป เพราะตัวนับเลขใบแจ้งซ่อมใช้ <code>RETURNING</code> หากต่ำกว่านั้นให้ติดตั้ง Python รุ่นใหม่ที่มาพร้อม SQLite รุ่นใหม่</p>
+<h2 id="2-virtual-environment">2. สร้าง virtual environment และติดตั้งไลบรารี</h2>
+<p>macOS / Linux:</p>
+<pre><code class="language-sh">python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+</code></pre>
+<p>Windows PowerShell:</p>
+<pre><code class="language-powershell">py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+</code></pre>
+<p>ถ้า PowerShell ไม่อนุญาตให้ activate สามารถใช้ <code>.\.venv\Scripts\python.exe</code> แทน <code>python</code> ในคำสั่งถัดไป หรือเปิด Command Prompt แล้วใช้ <code>.venv\Scripts\activate.bat</code></p>
+<p>หน้าที่ของไลบรารี:</p>
+<table>
+<thead>
+<tr>
+<th>ไลบรารี</th>
+<th>ใช้ทำอะไร</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flask</td>
+<td>รับ HTTP request และจัดการ routes</td>
+</tr>
+<tr>
+<td>Flask-SQLAlchemy</td>
+<td>อ่านและเขียนฐานข้อมูลด้วยโมเดล Python</td>
+</tr>
+<tr>
+<td>Flask-Login</td>
+<td>จัดการผู้ใช้ที่เข้าสู่ระบบและ session</td>
+</tr>
+<tr>
+<td>Flask-WTF</td>
+<td>ตรวจ CSRF token ในฟอร์ม POST</td>
+</tr>
+<tr>
+<td>Pillow</td>
+<td>ตรวจว่าไฟล์ที่อัปโหลดเป็นภาพจริง</td>
+</tr>
+<tr>
+<td>WeasyPrint (เสริม)</td>
+<td>สร้าง PDF จาก HTML</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. สร้างฐานข้อมูลและเปิดเว็บ</h2>
+<p>บน macOS ใช้ <code>./start.command</code> เพื่อสร้าง environment <code>.venv-app</code> ติดตั้งแพ็กเกจที่จำเป็น สร้างฐานข้อมูลและบัญชีฝึก แล้วเปิด Flask บนพอร์ต 5001 จากนั้นเปิด <code>http://127.0.0.1:5001/login</code> ค้าง Terminal ไว้ระหว่างใช้งาน และกด Ctrl+C เมื่อต้องการหยุดระบบ การติดตั้งครั้งแรกต้องเชื่อมต่ออินเทอร์เน็ต</p>
+<p>Live Server พอร์ต 5500 ใช้ดูหน้าตัวอย่างเท่านั้น ไม่สามารถเข้าสู่ระบบหรือบันทึกข้อมูลได้</p>
+<pre><code class="language-sh">python -m flask --app app:create_app init-db
+python -m flask --app app:create_app run --debug
+</code></pre>
+<p>เปิด <code>http://127.0.0.1:5000</code> ในเบราว์เซอร์ ถ้าพอร์ตถูกใช้อยู่ ให้เพิ่ม <code>--port 5001</code> ในคำสั่ง run แล้วเปิดพอร์ต 5001</p>
+<p>คำสั่ง <code>init-db</code> สร้างตารางและเพิ่มบัญชีฝึกที่ยังไม่มี โดยไม่ล้างข้อมูลเดิม ฐานข้อมูลอยู่ที่ <code>instance/repair.db</code> รูปที่อัปโหลดอยู่ใน <code>instance/uploads/</code> และ secret สำหรับ session อยู่ที่ <code>instance/secret.key</code></p>
+<table>
+<thead>
+<tr>
+<th>ชื่อผู้ใช้</th>
+<th>รหัสผ่านสำหรับฝึก</th>
+<th>บทบาท</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>admin</code></td>
+<td><code>Practice123!</code></td>
+<td>ผู้ดูแล: ดูทุกงาน มอบหมายงาน เพิ่มผู้ใช้</td>
+</tr>
+<tr>
+<td><code>teacher</code></td>
+<td><code>Practice123!</code></td>
+<td>ครู: สร้างใบแจ้งซ่อม ดูงานของตัวเอง</td>
+</tr>
+<tr>
+<td><code>technician</code></td>
+<td><code>Practice123!</code></td>
+<td>เจ้าหน้าที่: ดูและอัปเดตงานที่ได้รับมอบหมาย</td>
+</tr>
+</tbody>
+</table>
+<p>ใช้บัญชีเหล่านี้ในเครื่องสำหรับฝึก ก่อนนำไปใช้งานจริงให้เปลี่ยนรหัสผ่าน ปิด debug และกำหนดค่า session cookie ให้เหมาะกับ HTTPS</p>
+<h2 id="4">4. โครงสร้างไฟล์และลำดับอ่านโค้ด</h2>
+<pre><code class="language-text">repair-system/
+├── index.html                 คำถามและคำตอบใบงาน
+├── README.md                  คู่มือฝึก
+├── requirements.txt           ไลบรารีหลัก
+├── requirements-pdf.txt       ไลบรารีเสริมสำหรับ PDF
+├── models.py                  ตารางและกฎเปลี่ยนสถานะ
+├── services.py                สร้างเลขใบแจ้งซ่อม / ตรวจไฟล์ภาพ
+├── app.py                     สร้างแอป / routes / สิทธิ์
+├── schema.sql                 SQL สำหรับศึกษาตารางเดียวกับโมเดล
+├── templates/
+│   ├── base.html              เมนูหลักและข้อความแจ้งผล
+│   ├── login.html             เข้าสู่ระบบ
+│   ├── dashboard.html         สถิติ
+│   ├── create_repair.html     ฟอร์มแจ้งซ่อม
+│   ├── repairs.html           ค้นหาและกรองงาน
+│   ├── repair_detail.html     มอบหมาย / ซ่อม / รูป / ความคิดเห็น
+│   ├── users.html             รายการและเพิ่มผู้ใช้
+│   ├── print_repair.html      เอกสาร A4 และ PDF
+│   └── error.html             หน้าข้อผิดพลาด
+├── static/
+│   ├── style.css
+│   ├── ui.js                  แสดงรหัสผ่าน / ตัวอย่างภาพแนบ
+│   └── alerts.js              ตัวอย่าง SweetAlert2 เดิม (ไม่ได้โหลดในหน้าปัจจุบัน)
+├── tests/test_workflow.py     ทดสอบ workflow และสิทธิ์
+└── instance/                  สร้างอัตโนมัติเมื่อรัน
+</code></pre>
+<p>เริ่มอ่าน <code>models.py</code> → <code>services.py</code> → <code>app.py</code> → <code>templates/</code> หน้าปัจจุบันใช้ CSS ภายในโปรเจ็กต์ รองรับหน้าจอมือถือ พร้อมเมนูแสดงหน้าที่กำลังเปิด ตัวกรองค้นหา ป้ายสถานะ และข้อความแจ้งผลที่อ่านได้โดยไม่ต้องปิด popup</p>
+<p>โค้ด <code>RepairRequest</code> ในแอปเป็น SQLAlchemy Model จึงไม่ใช่ dataclass แบบตัวอย่างในใบงาน แต่ทำหน้าที่แทนใบแจ้งซ่อมเหมือนกัน</p>
+<p>การทำงานของหนึ่งคำขอ:</p>
+<pre><code class="language-text">Browser ส่งฟอร์ม
+  → Flask route ตรวจ login / role / CSRF / ข้อมูล
+  → Model และ Service ทำงาน
+  → db.session.commit() บันทึก SQLite
+  → redirect ไปหน้ารายละเอียด
+  → Jinja2 แสดงข้อมูลและ ข้อความแจ้งผลบนหน้าเว็บ
+</code></pre>
+<p>ตัวอย่างโค้ดที่ควรลองแก้เป็นข้อแรกใน <code>services.py</code>:</p>
+<pre><code class="language-python">def generate_request_no(sequence_number: int, now=None) -&gt; str:
+    now = now or datetime.now()
+    if not 1 &lt;= sequence_number &lt;= 999:
+        raise ValueError(&quot;รูปแบบเลข 3 หลักรองรับสูงสุด 999 ใบต่อเดือน&quot;)
+    return f&quot;RP-{now:%Y%m}-{str(sequence_number).zfill(3)}&quot;
+</code></pre>
+<p>ลองเปลี่ยน prefix <code>RP</code> เป็น <code>FIX</code> แล้วรันทดสอบ คุณจะเห็นว่าทดสอบรูปแบบเลขไม่ผ่าน จากนั้นเปลี่ยนกลับ นี่เป็นตัวอย่างการใช้ test ตรวจผลจากการแก้โค้ด</p>
+<h2 id="5">5. ฝึกใช้งานครบหนึ่งวงจร</h2>
+<ol>
+<li>เข้าสู่ระบบด้วย <code>teacher</code> เปิด <strong>แจ้งซ่อมใหม่</strong> กรอกอาคาร 3 ห้อง 301 ประเภทแอร์ และรายละเอียด “แอร์ไม่เย็น” แนบภาพ JPG หรือ PNG แล้วส่ง</li>
+<li>จดเลขใบแจ้งซ่อม เช่น <code>RP-202610-001</code> เลขส่วนกลางขึ้นกับเดือนที่รันจริง</li>
+<li>ออกจากระบบ แล้วเข้า <code>admin</code> เปิดรายการและใบแจ้งซ่อมดังกล่าว มอบหมายให้ <code>technician</code> พร้อมกำหนดวันเสร็จ</li>
+<li>เข้า <code>technician</code> เปิดงานที่ได้รับมอบหมาย กด <strong>เริ่มซ่อม</strong> สถานะจะเปลี่ยนเป็นกำลังดำเนินการ</li>
+<li>อัปโหลดภาพหลังซ่อม กรอกค่าใช้จ่ายและผลการซ่อม แล้วกด <strong>บันทึกซ่อมเสร็จ</strong></li>
+<li>เข้า <code>teacher</code> อีกครั้ง ตรวจสถานะ เพิ่มความคิดเห็น และเปิดหน้าพิมพ์</li>
+<li>ทดลองค้นหา กรองสถานะ และส่งออก CSV ไฟล์จะมีข้อมูลตามสิทธิ์และตัวกรองเดียวกับหน้ารายการ</li>
+</ol>
+<p>Dashboard แยก “รอรับเรื่อง” และ “รับเรื่องแล้ว” เพื่อให้ผลรวมทั้งสี่สถานะตรงกับจำนวนงานทั้งหมด</p>
+<h2 id="6">6. วิธีฝึกเขียนทีละส่วน</h2>
+<p>ทำทีละข้อแล้วตรวจผลบนหน้าเว็บ อย่าคัดลอกทั้งระบบในครั้งเดียวถ้าต้องการฝึกความเข้าใจ</p>
+<table>
+<thead>
+<tr>
+<th>ขั้น</th>
+<th>ไฟล์ที่ศึกษา</th>
+<th>งานฝึก</th>
+<th>ผลที่ควรเห็น</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>app.py</code></td>
+<td>เพิ่ม route <code>/hello</code> คืนข้อความ <code>Hello Flask</code></td>
+<td>เปิด URL แล้วเห็นข้อความ</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>models.py</code></td>
+<td>อ่านตาราง User แล้วลอง query ผู้ใช้ใน Flask shell</td>
+<td>ได้ผู้ใช้ฝึก 3 คน</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>login.html</code>, route <code>login</code></td>
+<td>ลองรหัสผ่านผิดและลองเปิด <code>/dashboard</code> ก่อน login</td>
+<td>ได้ข้อความผิดพลาดหรือถูกส่งไป login</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>create_repair.html</code>, route <code>create_repair</code></td>
+<td>เพิ่มข้อความแนะนำใต้ช่องรายละเอียด</td>
+<td>เห็นข้อความและสร้างงานได้</td>
+</tr>
+<tr>
+<td>5</td>
+<td>เมธอด <code>assign_to</code>, <code>start_repair</code>, <code>complete_repair</code></td>
+<td>ไล่เงื่อนไขเปลี่ยนสถานะและลองข้ามขั้นตอน</td>
+<td>ระบบปฏิเสธการเปลี่ยนสถานะผิดลำดับ</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>save_image</code>, route <code>image_file</code></td>
+<td>ลองอัปโหลดไฟล์ข้อความเปลี่ยนชื่อเป็น <code>.jpg</code></td>
+<td>ระบบปฏิเสธไฟล์ปลอม</td>
+</tr>
+<tr>
+<td>7</td>
+<td>route <code>dashboard</code>, <code>dashboard.html</code></td>
+<td>เพิ่มสถิติจำนวนงานเร่งด่วน โดยคงขอบเขตสิทธิ์เดิม</td>
+<td>ครูเห็นเฉพาะงานตัวเอง</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>base.html</code>, route <code>export_csv</code></td>
+<td>แก้ข้อความแจ้งผลและเพิ่มคอลัมน์ CSV</td>
+<td>ข้อความและไฟล์ส่งออกเปลี่ยนตามโค้ด</td>
+</tr>
+</tbody>
+</table>
+<p>ทดลอง query ใน shell:</p>
+<pre><code class="language-sh">python -m flask --app app:create_app shell
+</code></pre>
+<pre><code class="language-python">from models import db, User, RepairRequest
+from sqlalchemy import select
+users = db.session.scalars(select(User)).all()
+[(user.username, user.role) for user in users]
+repairs = db.session.scalars(select(RepairRequest)).all()
+[(repair.request_no, repair.status) for repair in repairs]
+</code></pre>
+<p>แบบฝึกต่อยอด: เพิ่ม pagination, หน้าแก้ไขข้อมูลผู้ใช้, การปิดใช้งานบัญชีแทนการลบประวัติ, ประวัติการเปลี่ยนสถานะ และฟังก์ชันรีเซ็ตรหัสผ่าน โปรเจ็กต์ตัวอย่างนี้มีหน้ารายการและเพิ่มผู้ใช้ ส่วนการแก้ไข/ลบผู้ใช้เป็นงานต่อยอด</p>
+<p>ถ้าเพิ่มคอลัมน์ในโมเดลภายหลัง <code>db.create_all()</code> จะไม่แก้ตารางเดิม ต้องเขียน migration หรือใช้ฐานข้อมูลใหม่สำหรับการฝึก และเก็บสำรองข้อมูลก่อนเปลี่ยนโครงสร้าง</p>
+<h2 id="7-pdf">7. PDF</h2>
+<p>เริ่มจากปุ่ม <strong>พิมพ์ / Save as PDF</strong> ซึ่งใช้การพิมพ์ของเบราว์เซอร์และ CSS ขนาด A4 ได้ทันที</p>
+<p>ถ้าต้องการปุ่มดาวน์โหลด PDF จากเซิร์ฟเวอร์:</p>
+<pre><code class="language-sh">python -m pip install -r requirements-pdf.txt
+python -m weasyprint --info
+</code></pre>
+<p>WeasyPrint ต้องมี Pango และฟอนต์ไทย เช่น Noto Sans Thai หรือ Sarabun ติดตั้งในระบบด้วย ดูขั้นตอนตามระบบปฏิบัติการที่ <a href="https://doc.courtbouillon.org/weasyprint/stable/first_steps.html">คู่มือติดตั้ง WeasyPrint</a> หากยังติดตั้งไม่ครบ แอปจะพาไปหน้าพิมพ์ พร้อมข้อความแจ้ง</p>
+<h2 id="8">8. ทดสอบและแก้ปัญหา</h2>
+<pre><code class="language-sh">python -m unittest discover -s tests -v
+</code></pre>
+<p>ทดสอบนี้ใช้ฐานข้อมูลในหน่วยความจำและโฟลเดอร์ภาพชั่วคราว ตรวจ workflow, การห้ามข้ามสถานะ, สิทธิ์ครูคนอื่น, CSRF, ไฟล์ภาพปลอม, เลขใบแจ้งซ่อมไม่ซ้ำ และ CSV โดยไม่แก้ฐานข้อมูลสำหรับฝึก</p>
+<table>
+<thead>
+<tr>
+<th>อาการ</th>
+<th>วิธีตรวจ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>No module named flask</code></td>
+<td>activate <code>.venv</code> และติดตั้ง requirements ด้วย Python ตัวเดียวกับที่รัน</td>
+</tr>
+<tr>
+<td><code>no such table: users</code></td>
+<td>รันคำสั่ง <code>init-db</code> ก่อนเปิดเว็บ</td>
+</tr>
+<tr>
+<td><code>CSRF token is missing</code></td>
+<td>ใส่ hidden input <code>csrf_token</code> ในทุกฟอร์ม POST</td>
+</tr>
+<tr>
+<td>เปิดรายละเอียดแล้ว 404</td>
+<td>ตรวจว่าครูเป็นผู้แจ้ง หรือเจ้าหน้าที่ได้รับมอบหมายงานนั้น</td>
+</tr>
+<tr>
+<td>รูปอัปโหลดไม่ได้</td>
+<td>ใช้ JPG/PNG/GIF จริง และข้อมูลรวมต่อ request ไม่เกิน 5 MB</td>
+</tr>
+<tr>
+<td>ไม่เห็นข้อความแจ้งผล</td>
+<td>ตรวจส่วนบนของหน้าเว็บ ข้อความแสดงในหน้าโดยไม่มี popup</td>
+</tr>
+<tr>
+<td>PDF ภาษาไทยเป็นสี่เหลี่ยม</td>
+<td>ติดตั้งฟอนต์ไทยบนเครื่องที่สร้าง PDF</td>
+</tr>
+<tr>
+<td><code>pip</code> เชื่อมต่อไม่ได้</td>
+<td>ตรวจอินเทอร์เน็ตหรือการตั้งค่า proxy แล้วติดตั้งใหม่</td>
+</tr>
+</tbody>
+</table>
+<p>หน้าปัจจุบันโหลด <code>static/style.css</code> และ <code>static/ui.js</code> จากแอปโดยตรง ไม่ต้องเชื่อมต่อ CDN เพื่อแสดงหน้าตาหรือข้อความแจ้งผล ฟอร์มหลักยังใช้งานได้แม้ปิด JavaScript</p>
+<p>ตรวจล่าสุดวันที่ 12 ตุลาคม 2026: ติดตั้งไลบรารีใน <code>.venv-app</code> ด้วย Python 3.14.5 และรัน integration tests ทั้ง 3 รายการผ่านแล้ว รวมถึงตรวจการตั้งค่า Docker Compose ผ่าน PDF ยังต้องตรวจบนเครื่องที่ติดตั้ง WeasyPrint/Pango และยังไม่ได้ทดสอบขึ้นเซิร์ฟเวอร์จริง</p>
+<h2 id="9-docker">9. ตั้งค่าเซิร์ฟเวอร์ด้วย Docker</h2>
+<p>ไฟล์ที่ใช้คือ <code>Dockerfile</code>, <code>compose.yaml</code>, <code>requirements-production.txt</code> และไฟล์ใน <code>deploy/</code> ต้องติดตั้ง Docker พร้อม Compose และมีโดเมนที่ชี้มายังเซิร์ฟเวอร์ โดยเปิดพอร์ต 80 และ 443</p>
+<p>หากยังไม่มีไฟล์ตั้งค่าจริง ให้สร้างจากตัวอย่าง:</p>
+<pre><code class="language-sh">cp deploy/server.env.example deploy/server.env
+chmod 600 deploy/server.env
+</code></pre>
+<p>แก้ <code>deploy/server.env</code> โดยใส่ <code>DOMAIN</code> เป็นโดเมนจริง, <code>SECRET_KEY</code> ยาวอย่างน้อย 32 ตัวอักษร และ <code>ADMIN_PASSWORD</code> ยาวอย่างน้อย 12 ตัวอักษร หากไฟล์นี้ถูกเตรียมพร้อมค่าที่สุ่มไว้แล้ว ให้เก็บค่าเหล่านั้นและเปลี่ยนเฉพาะโดเมนตามต้องการ ไฟล์นี้เก็บรหัสผ่าน จึงถูกยกเว้นจาก Git, Docker build context และ ZIP ซอร์สโค้ด</p>
+<p>ตรวจค่าตั้งค่าและเริ่มเซิร์ฟเวอร์:</p>
+<pre><code class="language-sh">docker compose --env-file deploy/server.env config --quiet
+docker compose --env-file deploy/server.env up -d --build
+</code></pre>
+<p>เปิด <code>https://&lt;โดเมนจริง&gt;/login</code> และใช้บัญชีในไฟล์ตั้งค่า ระบบจะสร้างฐานข้อมูลและผู้ดูแลครั้งแรกโดยไม่เพิ่มบัญชีฝึก ข้อมูลเก็บใน Docker volume <code>repair-data</code> การเปลี่ยน <code>ADMIN_PASSWORD</code> ในไฟล์ตั้งค่าจะไม่เปลี่ยนรหัสผ่านบัญชีที่สร้างแล้ว</p>
+<h2 id="10-github-pages">10. เผยแพร่ด้วย GitHub Pages</h2>
+<p>Workflow <code>.github/workflows/deploy.yml</code> ใช้ GitHub-hosted runner (<code>ubuntu-24.04</code>) สร้างเว็บด้วย <code>scripts/build_pages.py</code> และเผยแพร่ GitHub Pages เมื่อ push เข้า <code>main</code> หรือกด <strong>Actions → Deploy GitHub Pages → Run workflow</strong> ไม่ต้องติดตั้ง self-hosted runner, Docker หรือกำหนด secret เพื่อเผยแพร่ใบงาน</p>
+<ol>
+<li>เปิด <strong>Settings → Pages → Build and deployment → Source</strong> แล้วเลือก <strong>GitHub Actions</strong></li>
+<li>Commit และ push การเปลี่ยนแปลงเข้า <code>main</code></li>
+<li>ยกเลิก workflow เก่า <strong>Deploy self-hosted</strong> ที่ยัง Queued/Pending แล้วติดตาม workflow ใหม่ <strong>Deploy GitHub Pages</strong> ในแท็บ Actions</li>
+<li>เมื่อสำเร็จ เปิด https://tudzydev.github.io/repair-system/</li>
+</ol>
+<p>หน้าเข้าสู่ระบบตัวอย่างอยู่ที่ https://tudzydev.github.io/repair-system/pages/login.html หาก URL <code>/repair-system/login</code> แสดง 404 ให้ใช้ลิงก์ตัวอย่างนี้ และตรวจว่า workflow ล่าสุดเผยแพร่สำเร็จแล้ว หน้า <code>/login</code> สำหรับเข้าสู่ระบบจริงเป็น route ของ Flask</p>
+<p>หากขั้นตอน Configure Pages แจ้ง <code>Get Pages site failed</code> / <code>HttpError: Not Found</code> ให้เปิด <strong>Settings → Pages</strong> และเลือก Source เป็น <strong>GitHub Actions</strong> ก่อน แล้วกลับไป workflow ที่ล้มเหลว กด <strong>Re-run jobs → Re-run failed jobs</strong> การเปิด Pages ครั้งแรกต้องทำโดยผู้ที่มีสิทธิ์ตั้งค่า repository; workflow นี้ไม่เปิด Pages อัตโนมัติ เพราะ <code>enablement: true</code> ต้องใช้ token เพิ่มเติมนอกเหนือจาก <code>GITHUB_TOKEN</code></p>
+<p>GitHub Pages แสดงใบงาน, CSS/JavaScript, ตัวอย่างหน้าเข้าสู่ระบบ และซอร์สโค้ดสำหรับศึกษา หน้าเข้าสู่ระบบตัวอย่างปิดช่องกรอกและปุ่มส่งไว้อย่างชัดเจน เพราะ GitHub Pages ไม่รัน Python/Flask และไม่สามารถใช้ฐานข้อมูล SQLite สำหรับระบบจริงได้ หากต้องการเข้าสู่ระบบและบันทึกข้อมูล ให้ดาวน์โหลด ZIP แล้วรัน Flask ตามคู่มือ หรือใช้ Docker บนเซิร์ฟเวอร์ตามข้อ 9</p>
+<p>เว็บที่เผยแพร่มีเฉพาะไฟล์สาธารณะที่ระบุในสคริปต์ build ไม่รวม <code>instance/</code>, <code>.env</code>, <code>deploy/server.env</code> หรือ virtual environment ตรวจ build บนเครื่องได้ด้วย <code>python3 scripts/build_pages.py</code> ผลลัพธ์อยู่ใน <code>_site/</code> ซึ่งถูกยกเว้นจาก Git</p>
+<p>อ่านคู่มือบนเว็บได้ที่ <a href="README.html">คู่มือติดตั้งและใช้งาน</a> มีสารบัญ ตาราง และปุ่มคัดลอกโค้ด ส่วน <code>README.md</code> เป็นไฟล์ต้นฉบับสำหรับอ่านใน GitHub หรือดาวน์โหลด ทุกครั้งที่ workflow ทำงานจะสร้างหน้าเว็บจาก Markdown ล่าสุดโดยอัตโนมัติ</p>
+<p>หากแก้คู่มือแล้วต้องการอัปเดตหน้าเว็บใน repository ด้วย ให้ติดตั้ง <code>python3 -m pip install -r requirements-pages.txt</code> แล้วรัน <code>python3 scripts/build_guide.py</code> ก่อน commit หากต้องการตรวจเว็บทั้งหมด ให้รัน <code>python3 scripts/build_pages.py</code></p>
+<p>ไฟล์ <code>deploy/deploy.sh</code> ยังใช้สำหรับ deploy Docker บน Linux ด้วยตนเองได้ แต่ไม่ได้ถูกเรียกจาก GitHub Actions อีกต่อไป</p>
+<p>ดู <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">การตั้งค่า publishing source</a> และ <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">workflow สำหรับ GitHub Pages</a></p>
+<h2 id="_2">เอกสารที่ใช้ประกอบ</h2>
+<ul>
+<li><a href="https://flask.palletsprojects.com/en/stable/patterns/fileuploads/">Flask: การอัปโหลดไฟล์</a></li>
+<li><a href="https://flask-login.readthedocs.io/en/latest/">Flask-Login: session และ login_required</a></li>
+<li><a href="https://docs.sqlalchemy.org/en/20/orm/queryguide/select.html">SQLAlchemy: SELECT ด้วย ORM</a></li>
+<li><a href="https://flask-wtf.readthedocs.io/en/1.2.x/csrf/">Flask-WTF: CSRF Protection</a></li>
+<li><a href="https://sweetalert2.github.io/">SweetAlert2</a></li>
+</ul></article>
+    </div>
+    <footer>ระบบแจ้งซ่อมโรงเรียน · <a href="./">กลับไปใบงาน</a> · <a href="#guide-title">กลับขึ้นด้านบน ↑</a></footer>
+  </main>
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+</body>
+</html>

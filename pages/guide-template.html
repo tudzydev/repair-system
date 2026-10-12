@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="คู่มือติดตั้งและใช้งานระบบแจ้งซ่อมโรงเรียน ตั้งแต่เตรียมเครื่องจนถึงทดลองใช้งาน Flask">
+  <title>คู่มือเริ่มต้น · ระบบแจ้งซ่อมโรงเรียน</title>
+  <link rel="stylesheet" href="static/guide.css">
+  <script src="static/guide.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#guide-content">ข้ามไปเนื้อหาคู่มือ</a>
+  <header class="guide-header">
+    <a class="brand" href="./">🔧 ระบบแจ้งซ่อมโรงเรียน</a>
+    <a href="./">กลับไปใบงาน <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="guide-shell">
+    <section class="hero" aria-labelledby="guide-title">
+      <p class="eyebrow">คู่มือสำหรับนักศึกษา</p>
+      <h1 id="guide-title">เริ่มต้นใช้งาน<br>ระบบแจ้งซ่อมโรงเรียน</h1>
+      <p class="hero-description">เตรียมเครื่อง ติดตั้งโปรเจ็กต์ และลองแจ้งซ่อมครบหนึ่งวงจร<br>ทำตามทีละขั้น พร้อมคำสั่งที่คัดลอกไปใช้ได้ทันที</p>
+      <div class="hero-actions">
+        <a class="button primary" href="school-repair-source.zip" download>ดาวน์โหลดโปรเจ็กต์ ZIP ↓</a>
+        <a class="button secondary" href="README.md" download>ดาวน์โหลดคู่มือ Markdown</a>
+      </div>
+      <p class="notice">เว็บนี้ใช้สำหรับอ่านคู่มือและดูตัวอย่าง เมื่อต้องการเข้าสู่ระบบหรือบันทึกข้อมูล ให้เปิดโปรเจ็กต์ด้วย Flask บนเครื่องของคุณ</p>
+    </section>
+    <div class="guide-layout">
+      <aside class="guide-sidebar">
+        <details open>
+          <summary>สารบัญคู่มือ</summary>
+          <nav aria-label="สารบัญคู่มือ">$toc</nav>
+        </details>
+      </aside>
+      <article class="guide-content" id="guide-content" tabindex="-1">$content</article>
+    </div>
+    <footer>ระบบแจ้งซ่อมโรงเรียน · <a href="./">กลับไปใบงาน</a> · <a href="#guide-title">กลับขึ้นด้านบน ↑</a></footer>
+  </main>
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+</body>
+</html>
