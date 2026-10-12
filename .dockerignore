@@ -1,0 +1,12 @@
+.git/
+.DS_Store
+.venv/
+.venv-app/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+instance/
+.env
+.env.*
+deploy/server.env
+*.zip

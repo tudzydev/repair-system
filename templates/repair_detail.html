@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<a class="back-link" href="{{ url_for('list_repairs') }}">← กลับไปรายการแจ้งซ่อม</a>
+<div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+  <div><p class="eyebrow">รายละเอียดใบแจ้งซ่อม</p><h1 class="h3">{{ repair.request_no }}</h1></div>
+  <div><a class="btn btn-outline-secondary" href="{{ url_for('print_repair', repair_id=repair.id) }}">พิมพ์ / Save as PDF</a> <a class="btn btn-outline-secondary" href="{{ url_for('export_pdf', repair_id=repair.id) }}">ดาวน์โหลด PDF</a></div>
+</div>
+<ol class="progress-track" aria-label="ความคืบหน้างานซ่อม">
+{% set current_step = statuses.keys()|list %}{% for value, label in statuses.items() %}<li class="{{ 'done' if loop.index0 <= current_step.index(repair.status) else '' }}" {% if value == repair.status %}aria-current="step"{% endif %}>{{ loop.index }}. {{ label }}</li>{% endfor %}
+</ol>
+<section class="card p-4 mb-4">
+  <p><strong>ผู้แจ้ง:</strong> {{ repair.requester.fullname }} | {{ repair.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+  <p><strong>สถานที่:</strong> {{ repair.building }} / ห้อง {{ repair.room }}</p>
+  <p><strong>ประเภท:</strong> {{ problem_types[repair.problem_type] }} | <strong>ความเร่งด่วน:</strong> {{ urgencies[repair.urgency] }}</p>
+  <p class="preserve-lines">{{ repair.description }}</p>
+  <p><strong>สถานะ:</strong> <span class="status-badge status-{{ repair.status }}">{{ statuses[repair.status] }}</span> | <strong>ผู้รับผิดชอบ:</strong> {{ repair.technician.fullname if repair.technician else 'ยังไม่มอบหมาย' }}</p>
+  <p><strong>กำหนดเสร็จ:</strong> {{ repair.due_date or '-' }} | <strong>วันที่เสร็จ:</strong> {{ repair.completion_date or '-' }}</p>
+  {% if repair.status == 'completed' %}<p><strong>ค่าใช้จ่าย:</strong> {{ repair.cost }} บาท</p><p class="preserve-lines"><strong>ผลซ่อม:</strong> {{ repair.result }}</p>{% endif %}
+</section>
+{% if current_user.role == 'admin' and repair.status == 'pending' %}
+<section class="card p-4 mb-4"><h2 class="h5">มอบหมายงาน</h2>
+  <form action="{{ url_for('assign_repair', repair_id=repair.id) }}" method="post" class="row g-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-6"><label class="form-label" for="technician_id">เจ้าหน้าที่</label><select class="form-select" id="technician_id" name="technician_id" required>{% for user in technicians %}<option value="{{ user.id }}">{{ user.fullname }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label" for="due_date">กำหนดเสร็จ</label><input class="form-control" type="date" id="due_date" name="due_date" min="{{ today }}" required></div>
+    <div><button class="btn btn-primary">มอบหมายงาน</button></div>
+  </form>
+</section>
+{% endif %}
+{% if current_user.role == 'technician' and repair.status in ['accepted', 'in_progress'] %}
+<section class="card p-4 mb-4"><h2 class="h5">ดำเนินการซ่อม</h2>
+  <form action="{{ url_for('update_status', repair_id=repair.id) }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if repair.status == 'accepted' %}<button class="btn btn-primary" name="action" value="start">เริ่มซ่อม</button>
+    {% else %}
+    <label class="form-label" for="cost">ค่าใช้จ่าย (บาท)</label><input class="form-control mb-3" type="number" id="cost" name="cost" min="0" max="9999999999.99" step="0.01" required>
+    <label class="form-label" for="result">ผลการซ่อม</label><textarea class="form-control mb-3" id="result" name="result" rows="3" required></textarea>
+    <button class="btn btn-success" name="action" value="complete">บันทึกซ่อมเสร็จ</button>
+    {% endif %}
+  </form>
+</section>
+{% endif %}
+<section class="card p-4 mb-4"><h2 class="h5">รูปภาพก่อน–หลังซ่อม</h2>
+  <div class="row g-3 mb-3">{% for image in repair.images %}<figure class="col-6 col-md-3"><a href="{{ url_for('image_file', image_id=image.id) }}"><img class="repair-image" src="{{ url_for('image_file', image_id=image.id) }}" alt="ภาพ{{ 'ก่อน' if image.image_type == 'before' else 'หลัง' }}ซ่อม"></a><figcaption>{{ 'ก่อนซ่อม' if image.image_type == 'before' else 'หลังซ่อม' }}</figcaption></figure>{% else %}<p>ยังไม่มีรูปภาพ</p>{% endfor %}</div>
+  <form action="{{ url_for('upload_image', repair_id=repair.id) }}" method="post" enctype="multipart/form-data" class="row g-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-3"><label class="form-label" for="image_type">ประเภทภาพ</label><select class="form-select" id="image_type" name="image_type"><option value="before">ก่อนซ่อม</option>{% if current_user.role != 'teacher' %}<option value="after">หลังซ่อม</option>{% endif %}</select></div>
+    <div class="col-md-6"><label class="form-label" for="image">ไฟล์ภาพ (รวมไม่เกิน 5 MB)</label><input class="form-control" type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif" required></div>
+    <div class="col-md-3 align-self-end"><button class="btn btn-primary">อัปโหลด</button></div>
+  </form>
+</section>
+<section class="card p-4"><h2 class="h5">ความคิดเห็น</h2>
+  {% for comment in repair.comments %}<article class="border-bottom py-3"><strong>{{ comment.author.fullname }}</strong> <small>{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small><p class="preserve-lines mb-0">{{ comment.comment }}</p></article>{% else %}<p>ยังไม่มีความคิดเห็น</p>{% endfor %}
+  <form action="{{ url_for('add_comment', repair_id=repair.id) }}" method="post" class="mt-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label class="form-label" for="comment">เพิ่มความคิดเห็น</label><textarea class="form-control mb-2" id="comment" name="comment" maxlength="2000" required></textarea><button class="btn btn-primary">ส่งความคิดเห็น</button>
+  </form>
+</section>
+{% endblock %}

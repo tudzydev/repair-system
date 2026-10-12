@@ -1,0 +1,23 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><title>{{ repair.request_no }}</title>
+<style>
+@page { size: A4; margin: 20mm; }
+body { font-family: "Sarabun", "Noto Sans Thai", Tahoma, sans-serif; color: #222; line-height: 1.7; }
+h1 { font-size: 24px; text-align: center; } table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #aaa; padding: 10px; text-align: left; } th { width: 30%; }
+.lines { white-space: pre-wrap; overflow-wrap: break-word; } .tools { margin-bottom: 20px; }
+@media print { .tools { display: none; } }
+</style></head><body>
+{% if not pdf %}<div class="tools"><button onclick="window.print()">พิมพ์ / บันทึกเป็น PDF</button> <a href="{{ url_for('repair_detail', repair_id=repair.id) }}">กลับรายละเอียด</a></div>{% endif %}
+<h1>ใบแจ้งซ่อมภายในโรงเรียน</h1>
+<table>
+<tr><th>เลขใบแจ้งซ่อม</th><td>{{ repair.request_no }}</td></tr>
+<tr><th>ผู้แจ้ง / วันที่แจ้ง</th><td>{{ repair.requester.fullname }} / {{ repair.created_at.strftime('%d/%m/%Y %H:%M') }}</td></tr>
+<tr><th>อาคาร / ห้อง</th><td>{{ repair.building }} / {{ repair.room }}</td></tr>
+<tr><th>ประเภท / ความเร่งด่วน</th><td>{{ problem_types[repair.problem_type] }} / {{ urgencies[repair.urgency] }}</td></tr>
+<tr><th>รายละเอียดปัญหา</th><td class="lines">{{ repair.description }}</td></tr>
+<tr><th>สถานะ</th><td>{{ statuses[repair.status] }}</td></tr>
+<tr><th>เจ้าหน้าที่ / กำหนดเสร็จ</th><td>{{ repair.technician.fullname if repair.technician else '-' }} / {{ repair.due_date or '-' }}</td></tr>
+<tr><th>ผลการซ่อม</th><td class="lines">{{ repair.result or '-' }}</td></tr>
+<tr><th>ค่าใช้จ่าย / วันที่เสร็จ</th><td>{{ repair.cost if repair.cost is not none else '-' }} บาท / {{ repair.completion_date or '-' }}</td></tr>
+</table><p style="margin-top:40px">ลงชื่อผู้แจ้ง ____________________ ลงชื่อเจ้าหน้าที่ ____________________</p>
+</body></html>

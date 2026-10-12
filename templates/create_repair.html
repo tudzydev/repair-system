@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<a class="back-link" href="{{ url_for('list_repairs') }}">← กลับไปรายการแจ้งซ่อม</a>
+<div class="page-heading"><div><p class="eyebrow">ให้เราช่วยดูแล</p><h1>แจ้งซ่อมใหม่</h1><p class="text-secondary">ระบุสถานที่และปัญหาที่พบ · ช่องที่มี * จำเป็นต้องกรอก</p></div></div>
+<div class="form-layout">
+<form method="post" enctype="multipart/form-data" class="card p-4">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2 class="form-section">ข้อมูลสถานที่และปัญหา</h2>
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label" for="building">อาคาร *</label><input class="form-control" id="building" name="building" placeholder="เช่น อาคาร 3" maxlength="100" value="{{ request.form.get('building', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label" for="room">ห้อง *</label><input class="form-control" id="room" name="room" placeholder="เช่น 301 หรือห้องประชุม" maxlength="50" value="{{ request.form.get('room', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label" for="problem_type">ประเภทปัญหา *</label>
+      <select class="form-select" id="problem_type" name="problem_type" required><option value="">เลือกประเภท</option>{% for value, label in problem_types.items() %}<option value="{{ value }}" {% if request.form.get('problem_type') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-md-6"><label class="form-label" for="urgency">ความเร่งด่วน *</label>
+      <select class="form-select" id="urgency" name="urgency" required>{% for value, label in urgencies.items() %}<option value="{{ value }}" {% if request.form.get('urgency', 'medium') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-12"><label class="form-label" for="description">รายละเอียดปัญหา *</label><textarea class="form-control" id="description" name="description" aria-describedby="description-hint" placeholder="เช่น แอร์ไม่เย็น มีน้ำหยด เริ่มพบปัญหาเมื่อเช้านี้" rows="5" maxlength="5000" required>{{ request.form.get('description', '') }}</textarea><small id="description-hint" class="form-hint">บอกอาการ ตำแหน่งอุปกรณ์ และเวลาที่พบปัญหา เพื่อช่วยให้เจ้าหน้าที่เตรียมการซ่อม</small></div>
+    <div class="col-12"><label class="form-label" for="image">ภาพก่อนซ่อม (ไม่บังคับ)</label><input class="form-control" type="file" id="image" name="image" data-image-preview aria-describedby="image-hint image-feedback" accept=".jpg,.jpeg,.png,.gif"><small id="image-hint" class="form-hint">รองรับ JPG, PNG และ GIF · ขนาดข้อมูลรวมต่อการส่งฟอร์มไม่เกิน 5 MB</small><p id="image-feedback" class="text-secondary" aria-live="polite"></p><img id="image-preview" class="upload-preview" alt="ตัวอย่างภาพที่เลือกแนบ" hidden></div>
+  </div>
+  <div class="d-flex gap-2 mt-4 form-actions"><button class="btn btn-primary">ส่งใบแจ้งซ่อม</button><a class="btn btn-outline-secondary" href="{{ url_for('list_repairs') }}">ยกเลิก</a></div>
+</form>
+<aside class="form-aside"><h2>แจ้งอย่างไรให้ซ่อมได้เร็ว?</h2><ul><li>ระบุอาคารและห้องให้ชัดเจน</li><li>อธิบายอาการที่พบให้ละเอียด</li><li>แนบภาพเพื่อช่วยระบุปัญหา</li></ul><p>เมื่อส่งแล้ว คุณจะได้รับเลขใบแจ้งซ่อม และติดตามสถานะได้จากรายการแจ้งซ่อม</p></aside>
+</div>
+{% endblock %}

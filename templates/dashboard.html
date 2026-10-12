@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">ศูนย์ดูแลงานซ่อม</p><h1>ภาพรวมงานซ่อม</h1><p class="text-secondary">สวัสดี {{ current_user.fullname }} · {{ 'ติดตามงานที่คุณแจ้งได้ที่นี่' if current_user.role == 'teacher' else 'ติดตามงานที่ได้รับมอบหมายได้ที่นี่' if current_user.role == 'technician' else 'ตรวจสอบและจัดการงานซ่อมภายในโรงเรียน' }}</p></div>
+{% if current_user.role == 'teacher' %}<a class="btn btn-primary" href="{{ url_for('create_repair') }}">＋ แจ้งซ่อมใหม่</a>{% else %}<a class="btn btn-primary" href="{{ url_for('list_repairs', status='pending' if current_user.role == 'admin' else 'accepted') }}">{{ 'ดูงานรอมอบหมาย' if current_user.role == 'admin' else 'ดูงานที่รับเรื่องแล้ว' }}</a>{% endif %}</div>
+<div class="stats-grid">
+  <a class="stat-card" href="{{ url_for('list_repairs') }}"><span>งานทั้งหมด</span><strong>{{ total }}</strong><small>ดูรายการทั้งหมด →</small></a>
+  {% for status, label in statuses.items() %}<a class="stat-card stat-{{ status }}" href="{{ url_for('list_repairs', status=status) }}"><span><i class="status-dot" aria-hidden="true"></i>{{ label }}</span><strong>{{ stats[status] }}</strong><small>ดูรายการ →</small></a>{% endfor %}
+</div>
+<section class="card dashboard-guide"><div><p class="eyebrow">เริ่มต้นได้ง่าย ๆ</p><h2>ทุกงานซ่อม ติดตามได้ในที่เดียว</h2><p class="text-secondary">เลือกสถานะด้านบนเพื่อดูงาน หรือค้นหาด้วยเลขใบแจ้งซ่อม อาคาร และห้อง</p><a class="btn btn-outline-primary" href="{{ url_for('list_repairs') }}">ค้นหารายการแจ้งซ่อม →</a></div><ol class="workflow-guide"><li><strong>แจ้งปัญหา</strong><span>ระบุสถานที่และรายละเอียด</span></li><li><strong>รับเรื่องและซ่อม</strong><span>เจ้าหน้าที่รับงานและดำเนินการ</span></li><li><strong>ตรวจสอบผล</strong><span>ดูสถานะ รูปภาพ และผลการซ่อม</span></li></ol></section>
+<p class="scope-note">ข้อมูลแสดงเฉพาะงานที่คุณมีสิทธิ์เข้าถึง</p>
+{% endblock %}

@@ -1,0 +1,44 @@
+# Operating system and editor temporary files
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+*~
+
+# Python environments and generated files
+.venv/
+.venv-app/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Runtime database, uploaded images and session secrets
+instance/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.log
+
+# Local credentials; keep example configuration files in Git
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+deploy/server.env
+.aws/

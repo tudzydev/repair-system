@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">ดูแลสิทธิ์การใช้งาน</p><h1>จัดการผู้ใช้</h1><p class="text-secondary">ตรวจสอบบัญชีและเพิ่มผู้ใช้งานตามบทบาท</p></div></div>
+<div class="card table-responsive mb-4"><table class="table"><thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th></tr></thead><tbody>{% for user in users %}<tr><td>{{ user.username }}</td><td>{{ user.fullname }}</td><td>{{ {'teacher': 'ครู / บุคลากร', 'technician': 'เจ้าหน้าที่ซ่อม', 'admin': 'ผู้ดูแลระบบ'}[user.role] }}</td></tr>{% endfor %}</tbody></table></div>
+<section class="card p-4"><h2 class="h5">เพิ่มผู้ใช้</h2>
+<form method="post" class="row g-3">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="col-md-6"><label class="form-label" for="username">ชื่อผู้ใช้</label><input class="form-control" id="username" name="username" maxlength="80" required></div>
+  <div class="col-md-6"><label class="form-label" for="fullname">ชื่อ-นามสกุล</label><input class="form-control" id="fullname" name="fullname" maxlength="120" required></div>
+  <div class="col-md-6"><label class="form-label" for="password">รหัสผ่าน</label><input class="form-control" type="password" id="password" name="password" minlength="8" aria-describedby="password-hint" autocomplete="new-password" required><small class="form-hint" id="password-hint">ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร</small></div>
+  <div class="col-md-6"><label class="form-label" for="role">บทบาท</label><select class="form-select" id="role" name="role"><option value="teacher">ครู/บุคลากร</option><option value="technician">เจ้าหน้าที่ซ่อม</option><option value="admin">ผู้ดูแล</option></select></div>
+  <div><button class="btn btn-primary">เพิ่มผู้ใช้</button></div>
+</form></section>
+{% endblock %}

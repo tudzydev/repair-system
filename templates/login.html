@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เข้าสู่ระบบ · ระบบแจ้งซ่อมโรงเรียน</title>
+  <link rel="stylesheet" href="../static/style.css?v=20261012">
+  <script src="../static/ui.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">ข้ามไปยังเนื้อหา</a>
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="../"><span class="brand-icon" aria-hidden="true">🔧</span><span>ระบบแจ้งซ่อม<small>ดูแลโรงเรียนให้น่าอยู่</small></span></a>
+    </div>
+  </header>
+  <main id="main-content" class="container pb-5" tabindex="-1">
+    <!-- Server-side messages stay hidden when previewing this file directly. -->
+    <!-- {% with messages = get_flashed_messages(with_categories=true) %} -->
+    <!-- {% if messages %} -->
+    <div id="notifications" aria-live="polite" {% if not messages %} hidden {% endif %}>
+      <!-- {% for category, message in messages %} -->
+      <p class="alert {{ 'alert-danger' if category == 'error' else 'alert-info' }}" role="alert">{{ message }}</p>
+      <!-- {% endfor %} -->
+    </div>
+    <!-- {% endif %} -->
+    <!-- {% endwith %} -->
+    <div class="login-layout">
+      <div class="login-intro">
+        <p class="eyebrow">ดูแลโรงเรียน เริ่มจากเรื่องเล็ก ๆ</p>
+        <h1>แจ้งซ่อมง่าย<br>ติดตามได้ทุกขั้นตอน</h1>
+        <p>พบอุปกรณ์ชำรุด? แจ้งปัญหาให้เจ้าหน้าที่<br>พร้อมติดตามความคืบหน้าได้ในที่เดียว</p>
+        <ol class="workflow-guide">
+          <li><strong>แจ้งปัญหาพร้อมรูปภาพ</strong><span>ช่วยให้เจ้าหน้าที่เข้าใจปัญหาได้เร็วขึ้น</span></li>
+          <li><strong>ติดตามสถานะงานซ่อม</strong><span>ตั้งแต่รับเรื่องจนถึงซ่อมเสร็จ</span></li>
+        </ol>
+      </div>
+      <section class="card login-card p-4" aria-labelledby="login-heading">
+        <p class="eyebrow">ยินดีต้อนรับ</p>
+        <h2 id="login-heading">เข้าสู่ระบบ</h2>
+        <p class="text-secondary">ใช้บัญชีที่ได้รับจากผู้ดูแลระบบ</p>
+        <div id="login-preview-note" class="alert alert-info" role="status" hidden>
+          <strong>หน้านี้เป็นตัวอย่าง จึงยังเข้าสู่ระบบไม่ได้</strong>
+          <p>รันไฟล์ start.command ในโฟลเดอร์โปรเจ็กต์ แล้วเปิดระบบจริงจากลิงก์ด้านล่าง</p>
+          <a class="btn btn-outline-primary" href="http://127.0.0.1:5001/login">เปิดหน้าเข้าสู่ระบบจริง →</a>
+        </div>
+        <form method="post" id="login-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label class="form-label" for="username">ชื่อผู้ใช้</label>
+          <input class="form-control mb-3" id="username" name="username" autocomplete="username" required>
+          <label class="form-label" for="password">รหัสผ่าน</label>
+          <div class="password-field mb-3">
+            <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
+            <button class="password-toggle" type="button" aria-controls="password" aria-pressed="false" hidden>แสดง</button>
+          </div>
+          <button class="btn btn-primary w-100" id="login-submit">เข้าสู่ระบบ →</button>
+        </form>
+        <p class="login-help">หากเข้าไม่ได้ กรุณาติดต่อผู้ดูแลระบบของโรงเรียน</p>
+      </section>
+    </div>
+  </main>
+  <footer class="app-footer">ระบบแจ้งซ่อมภายในโรงเรียน · แจ้งปัญหา ติดตามงาน ดูผลการซ่อม</footer>
+</body>
+</html>

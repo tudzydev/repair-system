@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">ติดตามและจัดการ</p><h1>รายการแจ้งซ่อม</h1><p class="text-secondary">ค้นหางาน ตรวจสอบสถานะ และเปิดรายละเอียดเพื่อติดตามความคืบหน้า</p></div>{% if current_user.role == 'teacher' %}<a class="btn btn-primary" href="{{ url_for('create_repair') }}">＋ แจ้งซ่อมใหม่</a>{% endif %}</div>
+<section class="card filter-panel" aria-label="ค้นหาและกรองรายการ">
+<form class="filter-grid" method="get">
+  <div><label class="form-label" for="q">ค้นหางานซ่อม</label><input class="form-control" type="search" id="q" name="q" placeholder="เลขใบแจ้งซ่อม อาคาร ห้อง หรือรายละเอียด" value="{{ request.args.get('q', '') }}"></div>
+  <div><label class="form-label" for="status">สถานะ</label><select class="form-select" id="status" name="status"><option value="">ทุกสถานะ</option>{% for value, label in statuses.items() %}<option value="{{ value }}" {% if request.args.get('status') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <button class="btn btn-primary">ค้นหา</button>{% if request.args.get('q') or request.args.get('status') %}<a class="btn btn-outline-secondary" href="{{ url_for('list_repairs') }}">ล้างตัวกรอง</a>{% endif %}
+</form></section>
+<section class="card results-panel"><div class="results-heading"><h2 class="h5">{{ 'ผลการค้นหา' if request.args.get('q') or request.args.get('status') else 'รายการทั้งหมด' }} <span class="count">{{ repairs|length }} รายการ</span></h2><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('export_csv', q=request.args.get('q', ''), status=request.args.get('status', '')) }}">ดาวน์โหลด CSV</a></div>
+{% if repairs %}<div class="table-responsive"><table class="table align-middle repair-table"><caption class="visually-hidden">รายการแจ้งซ่อมตามตัวกรองที่เลือก</caption>
+  <thead><tr><th scope="col">เลขใบแจ้งซ่อม</th><th scope="col">สถานที่</th><th scope="col">ปัญหา</th><th scope="col">ความเร่งด่วน</th><th scope="col">สถานะ</th><th scope="col">ผู้รับผิดชอบ</th></tr></thead>
+  <tbody>{% for r in repairs %}<tr>
+    <td data-label="เลขใบแจ้งซ่อม"><a class="request-link" href="{{ url_for('repair_detail', repair_id=r.id) }}">{{ r.request_no }} →</a><small class="cell-note">{{ r.created_at.strftime('%d/%m/%Y') }}</small></td>
+    <td data-label="สถานที่">{{ r.building }}<small class="cell-note">ห้อง {{ r.room }}</small></td><td data-label="ปัญหา">{{ problem_types[r.problem_type] }}</td><td data-label="ความเร่งด่วน"><span class="urgency urgency-{{ r.urgency }}">{{ urgencies[r.urgency] }}</span></td><td data-label="สถานะ"><span class="status-badge status-{{ r.status }}">{{ statuses[r.status] }}</span></td><td data-label="ผู้รับผิดชอบ">{{ r.technician.fullname if r.technician else 'ยังไม่มอบหมาย' }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>{% else %}<div class="empty-state"><span aria-hidden="true">⌕</span><h2>{{ 'ไม่พบงานที่ตรงกับการค้นหา' if request.args.get('q') or request.args.get('status') else 'ยังไม่มีรายการแจ้งซ่อม' }}</h2><p>{{ 'ลองเปลี่ยนคำค้นหาหรือเลือกสถานะอื่น' if request.args.get('q') or request.args.get('status') else 'เมื่อมีการแจ้งซ่อม รายการจะแสดงที่นี่' }}</p>{% if request.args.get('q') or request.args.get('status') %}<a class="btn btn-outline-primary" href="{{ url_for('list_repairs') }}">ดูรายการทั้งหมด</a>{% elif current_user.role == 'teacher' %}<a class="btn btn-primary" href="{{ url_for('create_repair') }}">＋ แจ้งซ่อมรายการแรก</a>{% endif %}</div>{% endif %}</section>
+{% endblock %}
